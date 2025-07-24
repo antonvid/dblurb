@@ -27,10 +27,12 @@ router.post('/registered',
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             console.log(errors)
-            res.redirect('./register');
+            const messages = errors
+            res.redirect('./register', { messages });
         } else {
             // saving data in database
-            const plainPassword = req.body.password
+            const plainPassword = req.sanitize(req.body.password)
+            const username = req.sanitize(req.body.username)
             let sqlquery = "INSERT INTO users (username, password) VALUES (?,?)"
             
             bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
@@ -39,14 +41,14 @@ router.post('/registered',
                     next(err)
                 }
                 // Store hashed password in your database.
-                let newrecord = [req.sanitize(req.body.username), hashedPassword]
+                let newrecord = [username, hashedPassword]
                 // execute sql query
                 db.query(sqlquery, newrecord, (err, result) => {
                     if (err) {
                         next(err)
                     } else {
-                        result = req.sanitize(req.body.username + ' you are now registered!\n')
-                        result += 'Your password is: '+ req.sanitize(req.body.password) +' and your hashed password is: '+ hashedPassword
+                        result = username + ' you are now registered!\n'
+                        result += 'Your password is: '+ plainPassword +' and your hashed password is: '+ hashedPassword
                         res.send(result)
                     }
                 })
