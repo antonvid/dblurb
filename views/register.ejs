@@ -8,8 +8,8 @@
     <a href="/"><h1>dblurb</h1></a>
     Already got an account?
     <a href="/users/login">Login</a>
-    <% if (message) { %>
-      <p style="color:red;"><%= message %></p>
+    <% if (typeof messages !== 'undefined') { %>
+      <p style="color:red;"><%= messages %></p>
     <% } %>
     <form method="POST" action="registered">
       <p>Username: <input id="username" type="text" name="username"/></p>
